@@ -41,6 +41,15 @@ MY_CLOZE_MODEL = Model(
 
 
 def create_note(flash_card_pair: FlashCardPair) -> Note:
+    """
+    Create an Anki note from a FlashCardPair. Assumes we're creating cloze deletions.
+
+    Args:
+        flash_card_pair (FlashCardPair): The FlashCardPair to convert to a note.
+
+    Returns:
+        Note: The Anki note.
+    """
     my_note = Note(
         model=MY_CLOZE_MODEL, fields=[flash_card_pair.cloze, flash_card_pair.extra]
     )

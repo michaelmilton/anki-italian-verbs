@@ -1,22 +1,33 @@
 """
-Code to build the deck
+Code to send verb data to OpenAI and get back flashcard content.
 """
 
-import csv
 import os
+from dataclasses import dataclass
 import openai
 from openai import OpenAI
-from dataclasses import dataclass
-from typing import List
 from tenacity import (
     retry,
     stop_after_attempt,
     wait_random_exponential,
 )
 
+WAIT_MIN = 1
+WAIT_MAX = 120
+STOP_AFTER = 10
+CLIENT = OpenAI()
+openai.api_key = os.getenv("OPENAI_API_KEY")
+
 
 @dataclass
 class VerbPackage:
+    """
+    This dataclass encapsulates the data necessary to create a single
+    cloze deletion flashcard. It describes the verb we want to study, the
+    tense and person to learn, and the subject that we want the cloze
+    deletion sentence to describe.
+    """
+
     verb: str
     tense: str
     person: str
@@ -25,27 +36,30 @@ class VerbPackage:
 
 @dataclass
 class FlashCardPair:
+    """
+    This dataclass encapsulates the completed output from the genai process,
+    namely the cloze deletion and the extra material for the flashcard.
+    """
+
     cloze: str
     extra: str
 
 
-FILENAME = "cards.csv"
-
-# Load the OpenAI API key from an environment variable
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-
-client = OpenAI()
-
-VERB = "avere"
-TENSE = "Pluperfect Subjunctive"
-PERSON = "1st person plural"
-SUBJECT = "Roman history"
-
-
-@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
+@retry(
+    wait=wait_random_exponential(min=WAIT_MIN, max=WAIT_MAX),
+    stop=stop_after_attempt(STOP_AFTER),
+)
 def create_italian_sentence(verb_package: VerbPackage) -> str:
-    response = client.chat.completions.create(
+    """
+    Creates a sentence in Italian from the given VerbPackage.
+
+    Args:
+        verb_package (VerbPackage): The VerbPackage to use to create a sentence.
+
+    Returns:
+        str: The created sentence.
+    """
+    response = CLIENT.chat.completions.create(
         model="gpt-4o",
         messages=[
             {
@@ -61,8 +75,21 @@ def create_italian_sentence(verb_package: VerbPackage) -> str:
     return response.choices[0].message.content
 
 
-@retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def create_flashcard_cloze(verb_package: VerbPackage, sentence):
+@retry(
+    wait=wait_random_exponential(min=WAIT_MIN, max=WAIT_MAX),
+    stop=stop_after_attempt(STOP_AFTER),
+)
+def create_flashcard_cloze(verb_package: VerbPackage, sentence) -> str:
+    """
+    Takes the generated sentence and converts it into a cloze deletion.
+
+    Args:
+        verb_package (VerbPackage): The VerbPackage that was used in creating the sentence.
+        sentence (_type_): The sentence to convert to cloze.
+
+    Returns:
+        str: The cloze sentence
+    """
     create_flashcard_cloze_prompt = f"""
         Look at the following sentence:
         {sentence}
@@ -81,7 +108,7 @@ def create_flashcard_cloze(verb_package: VerbPackage, sentence):
         
         Only return the cloze deletion. Do not give any other commentary.
     """
-    response = client.chat.completions.create(
+    response = CLIENT.chat.completions.create(
         model="gpt-4o",
         messages=[
             {
@@ -98,12 +125,22 @@ def create_flashcard_cloze(verb_package: VerbPackage, sentence):
 
 
 @retry(wait=wait_random_exponential(min=1, max=60), stop=stop_after_attempt(6))
-def create_flashcard_extra(verb_package: VerbPackage, flashcard_front):
+def create_flashcard_extra(verb_package: VerbPackage, cloze) -> str:
+    """
+    Creates text for an extra field in the Anki note.
+
+    Args:
+        verb_package (VerbPackage): The VerbPackage used to create a sentence.
+        cloze (_type_): The cloze sentence
+
+    Returns:
+        str: The extra content
+    """
     create_flashcard_answer_prompt = f"""
         Create the extra material for an Anki flashcard. 
         Use HTML format. Do not use Markdown.
         This is the front of the flashcard:
-            {flashcard_front}
+            {cloze}
         For the extra material, first give the English translation of the sentence. 
         Next, give the conjugation of {verb_package.verb} in the {verb_package.tense} tense. Have one conjugated verb per line.
         At the bottom of the response card, there should be two links:
@@ -131,7 +168,7 @@ def create_flashcard_extra(verb_package: VerbPackage, flashcard_front):
         <p><a href="https://it.wikipedia.org/wiki/Storia_dell%27opera">Leggi di più su Wikipedia: Storia dell'opera in Italia</a></p>
         </div> 
     """
-    response = client.chat.completions.create(
+    response = CLIENT.chat.completions.create(
         model="gpt-4o",
         messages=[
             {
@@ -147,7 +184,19 @@ def create_flashcard_extra(verb_package: VerbPackage, flashcard_front):
     return response.choices[0].message.content
 
 
-def create_flashcard_pair(verb_package: VerbPackage):
+def create_flashcard_pair(verb_package: VerbPackage) -> FlashCardPair:
+    """
+    Returns a FlashCardPair from a VerbPackage. The FlashCardPair is ready for
+    conversion into an Anki note.
+
+    This function precipitates three API calls to OpenAI.
+
+    Args:
+        verb_package (VerbPackage): The VerbPackage being used to generate the note
+
+    Returns:
+        FlashCardPair: The content ready for conversion into a Note.
+    """
     print(f"Evaluating: {verb_package}")
     sample_sentence = create_italian_sentence(verb_package)
     flashcard_cloze = create_flashcard_cloze(verb_package, sample_sentence)

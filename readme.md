@@ -1,0 +1,1 @@
+Script to generate Italian verb flashcards. From a list of verb/person/tense combinations, the script chooses from a list of interesting subjects and creates a flashcard on each combination on that subject.
