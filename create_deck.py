@@ -1,3 +1,7 @@
+"""
+Module to take genai-created content and package it into Anki material.
+"""
+
 from typing import List
 from genanki import Model, Note, Deck, Package
 from create_content import FlashCardPair
@@ -57,6 +61,12 @@ def create_note(flash_card_pair: FlashCardPair) -> Note:
 
 
 def write_deck(notes: List[Note]) -> None:
+    """
+    From a list of notes, write to disk an Anki deck package file.
+
+    Args:
+        notes (List[Note]): The list of notes
+    """
     my_deck = Deck(2059400110, "Italian verbs")
     for note in notes:
         my_deck.add_note(note)
