@@ -7,6 +7,7 @@ name = "pypi"
 openai = "*"
 genanki = "*"
 tenacity = "*"
+mypy = "*"
 
 [dev-packages]
 

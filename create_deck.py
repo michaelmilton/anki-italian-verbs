@@ -2,9 +2,10 @@
 Module to take genai-created content and package it into Anki material.
 """
 
+import time
 from typing import List
 from genanki import Model, Note, Deck, Package
-from create_content import FlashCardPair
+from create_content import FlashCardPair, NoteList
 
 OUTPUT_FILENAME = "output.apkg"
 
@@ -60,14 +61,14 @@ def create_note(flash_card_pair: FlashCardPair) -> Note:
     return my_note
 
 
-def write_deck(notes: List[Note]) -> None:
+def write_deck(note_list: NoteList) -> None:
     """
     From a list of notes, write to disk an Anki deck package file.
 
     Args:
         notes (List[Note]): The list of notes
     """
-    my_deck = Deck(2059400110, "Italian verbs")
-    for note in notes:
+    my_deck = Deck(int(time.time()), note_list.name)
+    for note in note_list.notes:
         my_deck.add_note(note)
-    Package(my_deck).write_to_file(OUTPUT_FILENAME)
+    Package(my_deck).write_to_file(note_list.name + ".apkg")

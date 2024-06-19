@@ -13,3 +13,8 @@ sentire
 finire
 aprire
 partire
+alzarsi
+lavarsi
+vestirsi
+chiamarsi
+divertirsi
