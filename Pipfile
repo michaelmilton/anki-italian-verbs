@@ -8,6 +8,8 @@ openai = "*"
 genanki = "*"
 tenacity = "*"
 mypy = "*"
+boto3 = "*"
+spacy = "*"
 
 [dev-packages]
 

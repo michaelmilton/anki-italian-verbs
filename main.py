@@ -1,12 +1,11 @@
 """
-Module to execute the commands to generate flash cards and write them to 
+Module to execute the commands to generate flash cards and write them to
 an Anki package file.
 """
 
 from random import choice, shuffle
 import concurrent.futures
 from typing import List
-from genanki import Note
 from create_content import VerbPackage, VerbPackageList, create_flashcard_pair, NoteList
 from create_deck import create_note, write_deck
 
@@ -80,51 +79,75 @@ def build_verb_package_list(
     return VerbPackageList(name=name, verb_packages=verb_packages)
 
 
-def build_note_list(verb_packages: VerbPackageList) -> NoteList:
-    pairs = []
+def build_note_list(verb_package_list: VerbPackageList) -> NoteList:
+    """
+    From a list of verb packages, build a list of notes.
 
+    Args:
+        verb_package_list (VerbPackageList): The verb packages.
+
+    Returns:
+        NoteList: The note list.
+    """
+    pairs = []
+    print(
+        f"""
+        In `build_note_list`. The type of the `verb_package_list` is {type(verb_package_list)}.
+        The type of `verb_package_list.verb_packages` is {type(verb_package_list.verb_packages)}
+        """
+    )
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        pairs = list(executor.map(create_flashcard_pair, verb_packages.verb_packages))
+        pairs = list(
+            executor.map(create_flashcard_pair, verb_package_list.verb_packages)
+        )
 
     notes = []
     for pair in pairs:
         notes.append(create_note(pair))
 
     shuffle(notes)
-    return NoteList(name=verb_packages.name, notes=notes)
+    return NoteList(name=verb_package_list.name, notes=notes)
 
 
-if __name__ == "__main__":
-    verb_package_lists = [
+def go() -> None:
+    # Main execution
+    verb_package_lists_to_build = [
         build_verb_package_list(
             verbs=key_verbs, tenses=basic_tenses, name="Italian key verbs, basic tenses"
         ),
-        build_verb_package_list(
-            verbs=key_verbs,
-            tenses=advanced_tenses,
-            name="Italian key verbs, advanced tenses",
-        ),
-        build_verb_package_list(
-            verbs=regular_verbs,
-            tenses=basic_tenses,
-            name="Italian regular verbs, basic tenses",
-        ),
-        build_verb_package_list(
-            verbs=irregular_verbs,
-            tenses=basic_tenses,
-            name="Italian irregular verbs, basic tenses",
-        ),
-        build_verb_package_list(
-            verbs=regular_verbs,
-            tenses=advanced_tenses,
-            name="Italian regular verbs, advanced tenses",
-        ),
-        build_verb_package_list(
-            verbs=irregular_verbs,
-            tenses=advanced_tenses,
-            name="Italian irregular verbs, tenses",
-        ),
     ]
 
-    for verb_package_list in verb_package_lists:
-        write_deck(build_note_list(verb_package_list))
+    for verb_package_list_to_build in verb_package_lists_to_build:
+        write_deck(build_note_list(verb_package_list_to_build))
+
+
+if __name__ == "__main__":
+    go()
+
+
+"""
+build_verb_package_list(
+    verbs=key_verbs,
+    tenses=advanced_tenses,
+    name="Italian key verbs, advanced tenses",
+),
+build_verb_package_list(
+    verbs=regular_verbs,
+    tenses=basic_tenses,
+    name="Italian regular verbs, basic tenses",
+),
+build_verb_package_list(
+    verbs=irregular_verbs,
+    tenses=basic_tenses,
+    name="Italian irregular verbs, basic tenses",
+),
+build_verb_package_list(
+    verbs=regular_verbs,
+    tenses=advanced_tenses,
+    name="Italian regular verbs, advanced tenses",
+),
+build_verb_package_list(
+    verbs=irregular_verbs,
+    tenses=advanced_tenses,
+    name="Italian irregular verbs, tenses",
+),"""

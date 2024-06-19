@@ -1,4 +1,8 @@
+fare
+essere
+stare
 
-
-
-
+Presente Condizionale
+Passato Condizionale
+Imperfetto Indicativo
+Trapassato Prossimo Indicativo

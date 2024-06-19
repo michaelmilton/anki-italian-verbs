@@ -5,7 +5,7 @@ Module to take genai-created content and package it into Anki material.
 import time
 from typing import List
 from genanki import Model, Note, Deck, Package
-from create_content import FlashCardPair, NoteList
+from create_content import NoteList, VerbPackage
 
 OUTPUT_FILENAME = "output.apkg"
 
@@ -45,18 +45,19 @@ MY_CLOZE_MODEL = Model(
 )
 
 
-def create_note(flash_card_pair: FlashCardPair) -> Note:
+def create_note(verb_package: VerbPackage) -> Note:
     """
-    Create an Anki note from a FlashCardPair. Assumes we're creating cloze deletions.
+    Create an Anki note from a VerbPackage. Assumes we're creating cloze deletions.
 
     Args:
-        flash_card_pair (FlashCardPair): The FlashCardPair to convert to a note.
+        verb_package (VerbPackage): The VerbPackage to convert to a note.
 
     Returns:
         Note: The Anki note.
     """
     my_note = Note(
-        model=MY_CLOZE_MODEL, fields=[flash_card_pair.cloze, flash_card_pair.extra]
+        model=MY_CLOZE_MODEL,
+        fields=[verb_package.flashcard_cloze, verb_package.flashcard_extra],
     )
     return my_note
 
