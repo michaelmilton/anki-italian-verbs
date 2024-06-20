@@ -2,3 +2,5 @@ Presente Indicativo
 Passato Prossimo Indicativo
 Presente Condizionale
 Passato Condizionale
+Imperfetto Indicativo
+Trapassato Prossimo Indicativo

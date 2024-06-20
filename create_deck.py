@@ -3,7 +3,6 @@ Module to take genai-created content and package it into Anki material.
 """
 
 import time
-from typing import List
 from genanki import Model, Note, Deck, Package
 from create_content import NoteList, VerbPackage
 
