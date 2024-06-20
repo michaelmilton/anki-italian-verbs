@@ -50,7 +50,6 @@ def get_conjugated(verb_package: VerbPackage) -> VerbPackage:
     Returns:
         VerbPackage: The verb package with conjugated form added.
     """
-    print(f"Requesting conjugated form of {verb_package.verb}")
 
     get_conjugated_prompt = f"""
         Return the {verb_package.person} {verb_package.tense} of {verb_package.verb}.

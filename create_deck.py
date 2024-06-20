@@ -63,7 +63,7 @@ def create_note(verb_package: VerbPackage) -> Note:
 
 def write_deck(note_list: NoteList) -> None:
     """
-    From a list of notes, write to disk an Anki deck package file.
+    From a NoteList, write to disk an Anki deck package file.
 
     Args:
         notes (List[Note]): The list of notes
@@ -72,3 +72,26 @@ def write_deck(note_list: NoteList) -> None:
     for note in note_list.notes:
         my_deck.add_note(note)
     Package(my_deck).write_to_file(note_list.name + ".apkg")
+
+
+def build_note_list(verb_package_list: VerbPackageList) -> NoteList:
+    """
+    From a list of verb packages, build a list of notes.
+
+    Args:
+        verb_package_list (VerbPackageList): The verb packages.
+
+    Returns:
+        NoteList: The note list.
+    """
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        final_verb_packages = list(
+            executor.map(create_flashcard_pair, verb_package_list.verb_packages)
+        )
+
+    notes = []
+    for final_verb_package in final_verb_packages:
+        notes.append(create_note(final_verb_package))
+
+    shuffle(notes)
+    return NoteList(name=verb_package_list.name, notes=notes)

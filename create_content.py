@@ -100,7 +100,6 @@ def create_italian_sentence(verb_package: VerbPackage) -> VerbPackage:
     Returns:
         str: The created sentence.
     """
-    print(f"Requesting from OpenAI sentence for {verb_package.verb_conjugated}")
     subject_statement = (
         f"The sentence will be on the topic of {verb_package.subject}."
         if verb_package.person
@@ -109,6 +108,9 @@ def create_italian_sentence(verb_package: VerbPackage) -> VerbPackage:
             "3rd person plural",
         }
         else ""
+    )
+    print(
+        f"Requesting from OpenAI sentence for {verb_package.verb_conjugated}. {subject_statement}"
     )
     create_italian_sentence_prompt = f"""
         Create a sentence using this verb:
