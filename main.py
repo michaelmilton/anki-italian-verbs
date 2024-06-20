@@ -7,11 +7,6 @@ from random import choice, shuffle
 import concurrent.futures
 from typing import List
 from create_content import (
-    VerbPackage,
-    VerbPackageList,
-    create_flashcard_pair,
-    NoteList,
-    get_conjugated,
     key_verbs,
     irregular_verbs,
     regular_verbs,
@@ -19,36 +14,9 @@ from create_content import (
     advanced_tenses,
     persons,
 )
-from create_deck import create_note, write_deck, build_note_list
+from create_deck import write_deck, build_note_list, build_verb_package_list
 
 MAX_WORKERS = 20
-
-
-def build_verb_package_list(
-    name,
-    verbs: List[str] = key_verbs,
-    tenses: List[str] = basic_tenses,
-    persons: List[str] = persons,
-) -> VerbPackageList:
-    """
-    Build a list of VerbPackage objects given the requested collection of verbs and tenses.
-
-    Args:
-        verbs (List[str], optional): The verb set to use. Defaults to key_verbs.
-        tenses (List[str], optional): The tenses to use. Defaults to basic_tenses.
-        persons (List[str], optional): The persons to use. Defaults to persons.
-
-    Returns:
-        List[VerbPackage]: VerbPackage objects for which we will make Anki notes.
-    """
-    verb_packages = []
-    for verb in verbs:
-        for tense in tenses:
-            for person in persons:
-                verb_package = VerbPackage(verb=verb, tense=tense, person=person)
-                verb_packages.append(verb_package)
-
-    return VerbPackageList(name=name, verb_packages=verb_packages)
 
 
 def go() -> None:

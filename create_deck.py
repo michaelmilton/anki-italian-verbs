@@ -95,3 +95,30 @@ def build_note_list(verb_package_list: VerbPackageList) -> NoteList:
 
     shuffle(notes)
     return NoteList(name=verb_package_list.name, notes=notes)
+
+
+def build_verb_package_list(
+    name,
+    verbs: List[str] = key_verbs,
+    tenses: List[str] = basic_tenses,
+    persons: List[str] = persons,
+) -> VerbPackageList:
+    """
+    Build a list of VerbPackage objects given the requested collection of verbs and tenses.
+
+    Args:
+        verbs (List[str], optional): The verb set to use. Defaults to key_verbs.
+        tenses (List[str], optional): The tenses to use. Defaults to basic_tenses.
+        persons (List[str], optional): The persons to use. Defaults to persons.
+
+    Returns:
+        List[VerbPackage]: VerbPackage objects for which we will make Anki notes.
+    """
+    verb_packages = []
+    for verb in verbs:
+        for tense in tenses:
+            for person in persons:
+                verb_package = VerbPackage(verb=verb, tense=tense, person=person)
+                verb_packages.append(verb_package)
+
+    return VerbPackageList(name=name, verb_packages=verb_packages)
