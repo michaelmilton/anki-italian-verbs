@@ -2,11 +2,26 @@
 Module to take genai-created content and package it into Anki material.
 """
 
+from random import shuffle
 import time
+from typing import List
+from concurrent.futures import ThreadPoolExecutor
 from genanki import Model, Note, Deck, Package
-from create_content import NoteList, VerbPackage
+from create_content import create_flashcard_pair
+from verb_data import (
+    key_verbs,
+    irregular_verbs,
+    regular_verbs,
+    basic_tenses,
+    advanced_tenses,
+    all_persons,
+)
+from data_types import NoteList, VerbPackage, VerbPackageList
+
 
 OUTPUT_FILENAME = "output.apkg"
+
+MAX_WORKERS = 20
 
 CSS = """.card {
  font-family: arial;
@@ -84,7 +99,7 @@ def build_note_list(verb_package_list: VerbPackageList) -> NoteList:
     Returns:
         NoteList: The note list.
     """
-    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+    with ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         final_verb_packages = list(
             executor.map(create_flashcard_pair, verb_package_list.verb_packages)
         )
@@ -101,7 +116,7 @@ def build_verb_package_list(
     name,
     verbs: List[str] = key_verbs,
     tenses: List[str] = basic_tenses,
-    persons: List[str] = persons,
+    persons: List[str] = all_persons,
 ) -> VerbPackageList:
     """
     Build a list of VerbPackage objects given the requested collection of verbs and tenses.

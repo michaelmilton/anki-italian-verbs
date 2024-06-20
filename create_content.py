@@ -4,11 +4,7 @@ Code to send verb data to OpenAI and get back flashcard content.
 
 import os
 import re
-from random import choice
-from dataclasses import dataclass
-from typing import List
 import boto3
-from genanki import Note
 import openai
 from tenacity import (
     retry,
@@ -18,9 +14,9 @@ from tenacity import (
 from utils import (
     get_conjugated,
     get_conjugation_from_disk,
-    read_data,
     get_wikipedia_link_for_subject,
 )
+from data_types import VerbPackage
 
 WAIT_MIN = 1
 WAIT_MAX = 120
@@ -30,60 +26,6 @@ openai.api_key = os.getenv("OPENAI_API_KEY")
 
 EXPENSIVE_MODEL = "gpt-4o"
 CHEAP_MODEL = "gpt-3.5-turbo"
-
-
-subjects = read_data("content/subjects.txt")
-key_verbs = read_data("content/key_verbs.txt")
-irregular_verbs = read_data("content/irregular_verbs.txt")
-regular_verbs = read_data("content/regular_verbs.txt")
-basic_tenses = read_data("content/basic_tenses.txt")
-advanced_tenses = read_data("content/advanced_tenses.txt")
-persons = read_data("content/persons.txt")
-
-
-@dataclass
-class VerbPackage:
-    """
-    This dataclass encapsulates the data necessary to create a single
-    cloze deletion flashcard. It describes the verb we want to study, the
-    tense and person to learn, and the subject that we want the cloze
-    deletion sentence to describe.
-
-    It also accumulates the cloze and extra values that get fed into
-    the functions from `create_deck` that create the Anki notes and
-    package.
-
-    This object gets mutated throughout the process of developing a note.
-    """
-
-    verb: str
-    tense: str
-    person: str
-    subject: str = choice(subjects)
-    sentence: str = ""
-    flashcard_cloze: str = ""
-    flashcard_extra: str = ""
-    verb_conjugated: str = ""
-
-
-@dataclass
-class VerbPackageList:
-    """
-    Encapsulates a list of VerbPackages
-    """
-
-    name: str
-    verb_packages: List[VerbPackage]
-
-
-@dataclass
-class NoteList:
-    """
-    Encapsulates a list of Notes
-    """
-
-    name: str
-    notes: List[Note]
 
 
 @retry(
