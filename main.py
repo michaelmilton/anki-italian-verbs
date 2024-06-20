@@ -19,19 +19,19 @@ from create_deck import write_deck, build_note_list, build_verb_package_list
 def go() -> None:
     # Main execution
     verb_package_lists_to_build = [
-        # build_verb_package_list(
-        #     verbs=key_verbs, tenses=basic_tenses, name="Italian key verbs, basic tenses"
-        # ),
-        # build_verb_package_list(
-        #     verbs=key_verbs,
-        #     tenses=advanced_tenses,
-        #     name="Italian key verbs, advanced tenses",
-        # ),
-        # build_verb_package_list(
-        #     verbs=regular_verbs,
-        #     tenses=basic_tenses,
-        #     name="Italian regular verbs, basic tenses",
-        # ),
+        build_verb_package_list(
+            verbs=key_verbs, tenses=basic_tenses, name="Italian key verbs, basic tenses"
+        ),
+        build_verb_package_list(
+            verbs=key_verbs,
+            tenses=advanced_tenses,
+            name="Italian key verbs, advanced tenses",
+        ),
+        build_verb_package_list(
+            verbs=regular_verbs,
+            tenses=basic_tenses,
+            name="Italian regular verbs, basic tenses",
+        ),
         build_verb_package_list(
             verbs=irregular_verbs,
             tenses=basic_tenses,

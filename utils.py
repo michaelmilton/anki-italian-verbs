@@ -44,7 +44,7 @@ def get_conjugated(verb_package: VerbPackage) -> VerbPackage:
         ],
     )
     verb_package.verb_conjugated = (
-        str(response.choices[0].message.content).lower().strip()
+        str(response.choices[0].message.content).lower().strip().replace(".", "")
     )
 
     return verb_package

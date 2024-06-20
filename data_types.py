@@ -23,7 +23,7 @@ class VerbPackage:
     verb: str
     tense: str
     person: str
-    subject: str = choice(subjects)
+    subject: str
     sentence: str = ""
     flashcard_cloze: str = ""
     flashcard_extra: str = ""

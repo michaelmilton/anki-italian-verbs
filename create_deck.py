@@ -2,19 +2,20 @@
 Module to take genai-created content and package it into Anki material.
 """
 
-from random import shuffle
+from random import shuffle, choice
 import time
 from typing import List
 from concurrent.futures import ThreadPoolExecutor
 from genanki import Model, Note, Deck, Package
 from create_content import create_flashcard_pair
-from verb_data import (
+from constants import (
     key_verbs,
     irregular_verbs,
     regular_verbs,
     basic_tenses,
     advanced_tenses,
     all_persons,
+    subjects,
 )
 from data_types import NoteList, VerbPackage, VerbPackageList
 
@@ -117,6 +118,7 @@ def build_verb_package_list(
     verbs: List[str] = key_verbs,
     tenses: List[str] = basic_tenses,
     persons: List[str] = all_persons,
+    subjects: List[str] = subjects,
 ) -> VerbPackageList:
     """
     Build a list of VerbPackage objects given the requested collection of verbs and tenses.
@@ -133,7 +135,9 @@ def build_verb_package_list(
     for verb in verbs:
         for tense in tenses:
             for person in persons:
-                verb_package = VerbPackage(verb=verb, tense=tense, person=person)
+                verb_package = VerbPackage(
+                    verb=verb, tense=tense, person=person, subject=choice(subjects)
+                )
                 verb_packages.append(verb_package)
 
     return VerbPackageList(name=name, verb_packages=verb_packages)
