@@ -1,39 +1,14 @@
 import os
 import json
-from typing import List
 from tenacity import (
     retry,
     stop_after_attempt,
     wait_random_exponential,
 )
-from create_content import (
-    VerbPackage,
-    EXPENSIVE_MODEL,
-    CLIENT,
-    WAIT_MAX,
-    WAIT_MIN,
-    STOP_AFTER,
-)
+from constants import EXPENSIVE_MODEL, CLIENT, WAIT_MAX, WAIT_MIN, STOP_AFTER
+from data_types import VerbPackage
 
 CONJUGATIONS_FILE = "conjugations.txt"
-
-
-def read_data(file_name) -> List[str]:
-    """Read data from a file
-
-    Args:
-        file_name (_type_): One of the vocab info lists.
-
-    Returns:
-        List[str]: A list of the relevant vocab data.
-    """
-    lines = []
-
-    with open(file_name, "r", encoding="utf-8") as file:
-        lines = file.readlines()
-
-    lines = [line.strip() for line in lines]
-    return lines
 
 
 @retry(
@@ -50,7 +25,6 @@ def get_conjugated(verb_package: VerbPackage) -> VerbPackage:
     Returns:
         VerbPackage: The verb package with conjugated form added.
     """
-
     get_conjugated_prompt = f"""
         Return the {verb_package.person} {verb_package.tense} of {verb_package.verb}.
         Only include the Italian conjugated verb. Do not include any other information.

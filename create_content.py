@@ -17,15 +17,14 @@ from utils import (
     get_wikipedia_link_for_subject,
 )
 from data_types import VerbPackage
-
-WAIT_MIN = 1
-WAIT_MAX = 120
-STOP_AFTER = 10
-CLIENT = openai.OpenAI()
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-EXPENSIVE_MODEL = "gpt-4o"
-CHEAP_MODEL = "gpt-3.5-turbo"
+from constants import (
+    WAIT_MAX,
+    WAIT_MIN,
+    STOP_AFTER,
+    CLIENT,
+    EXPENSIVE_MODEL,
+    # CHEAP_MODEL,
+)
 
 
 @retry(

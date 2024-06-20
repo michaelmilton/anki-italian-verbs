@@ -4,19 +4,16 @@ an Anki package file.
 """
 
 from random import choice, shuffle
-import concurrent.futures
 from typing import List
-from create_content import (
+from constants import (
     key_verbs,
     irregular_verbs,
     regular_verbs,
     basic_tenses,
     advanced_tenses,
-    persons,
+    all_persons,
 )
 from create_deck import write_deck, build_note_list, build_verb_package_list
-
-MAX_WORKERS = 20
 
 
 def go() -> None:

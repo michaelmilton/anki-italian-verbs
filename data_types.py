@@ -2,7 +2,7 @@ from dataclasses import dataclass
 from random import choice
 from typing import List
 from genanki import Note
-from verb_data import subjects
+from constants import subjects
 
 
 @dataclass
